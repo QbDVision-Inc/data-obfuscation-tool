@@ -1,0 +1,30 @@
+general:
+  - type: "string"
+    obfuscationRule: "stringObfuscate"
+    ignorePattern: (^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$)
+      |(^\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b$)
+      |(^\[?\s*\{.*?\}\s*(,\s*\{.*?\}\s*)*\]?$)
+
+columns:
+  - name: currentState
+    ignore: true
+  - name: objectModel
+    ignore: true
+  - name: fromLibraryModel
+    ignore: true
+  - name: processParameterOrder
+    ignore: true
+
+tables:
+  - name: SequelizeMeta
+    ignore: true
+  - name: Projects
+    columns:
+      - name: "name"
+        obfuscationRule: "nameObfuscate"
+        ignorePattern: null
+  - name: "UserActivities"
+    columns:
+      - name: "requestContext"
+        obfuscationRule: "requestContextObfuscate"
+        ignorePattern: null

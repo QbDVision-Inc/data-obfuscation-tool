@@ -1,0 +1,10 @@
+database:
+  host: localhost
+  username: root
+  password: root
+  database: temp_database
+  dialect: mysql
+  logging: false
+
+inputDump: <Path to input dump>/database_dump.sql
+outputDump: <Path to output dump>/obfuscated_dump.sql
