@@ -11,3 +11,28 @@ config.yaml
 
 # A batch file that shouldn't be checked in.
 downloadDB.bat
+
+# Vim
+# ---
+*.sw[op]
+
+# Emacs
+# -----
+*~
+
+# Textmate
+# --------
+.textmate
+
+# Sublime Text
+# ------------
+*.sublime-*
+
+# jEnv
+# ----
+.java-version
+
+# OS X
+# ----
+.DS_Store
+
