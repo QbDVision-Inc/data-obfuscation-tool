@@ -7,3 +7,7 @@ config.yaml
 
 # So that nobody accidentally checks in a private SQL file
 *.sql
+*.sql.zip
+
+# A batch file that shouldn't be checked in.
+downloadDB.bat
