@@ -17,6 +17,7 @@ class DumpLoader {
     this.user = dbConfig.username;
     this.password = dbConfig.password;
     this.database = dbConfig.database;
+    this.port = dbConfig.port;
     this.dialect = dbConfig.dialect;
     this.dumpFilePath = dumpFilePath;
     this.sequelize = new Sequelize(dbConfig);
@@ -30,13 +31,14 @@ class DumpLoader {
         username: this.user,
         password: this.password,
         database: "sys",
+        port: this.port,
         dialect: this.dialect
       }).query(`CREATE DATABASE IF NOT EXISTS ${this.database}`);
 
       logger.info(`Database ${this.database} created or already exists.`);
 
     } catch (e) {
-      logger.error(`An unexpected error occurred while creating temporary obfuscation database`, e);
+      logger.error(e, `An unexpected error occurred while creating temporary obfuscation database`);
       throw e;
     }
   }
@@ -89,9 +91,10 @@ class DumpLoader {
       await this.ensureSchemaExists();
 
       await this.sequelize.authenticate();
-      logger.info('Connection to the temporarily obfuscation database established successfully');
+      logger.info('Connection to the temporary obfuscation database established successfully.');
 
       // Load the dump file
+      logger.info('Loading dump file...');
       await this.load(tempDumpFilePath);
       logger.info(`Database loaded from the dump file < ${tempDumpFilePath}`);
 
@@ -104,7 +107,7 @@ class DumpLoader {
   }
 
   async load(dumpFilePath) {
-    const command = `mysql -h ${this.host} -u ${this.user} -p${this.password} ${this.database} < ${dumpFilePath}`;
+    const command = `mysql -h ${this.host} -u ${this.user} -p${this.password} --port=${this.port} ${this.database} < ${dumpFilePath}`;
     await execAsync(command);
   }
 }

@@ -12,6 +12,7 @@ class DumpExporter {
     this.user = dbConfig.username;
     this.password = dbConfig.password;
     this.database = dbConfig.database;
+    this.port = dbConfig.port;
     this.outputPath = outputPath;
   }
 
@@ -19,7 +20,7 @@ class DumpExporter {
 
     try {
 
-      const command = `mysqldump -h ${this.host} -u ${this.user} --password=${this.password} ${this.database} > ${this.outputPath}`;
+      const command = `mysqldump -h ${this.host} -u ${this.user} --password=${this.password} --port=${this.port} ${this.database} > ${this.outputPath}`;
       await execAsync(command);
       logger.info(`Database dump exported successfully to ${this.outputPath}`);
 
