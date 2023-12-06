@@ -3,6 +3,7 @@ database:
   username: root
   password: root
   database: temp_database
+  port: 3306
   dialect: mysql
   logging: false
 
