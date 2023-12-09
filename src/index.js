@@ -1,14 +1,12 @@
-"use strict";
+import DumpLoader from "./classes/DumpLoader.js";
+import Obfuscator from "./classes/Obfuscator.js";
+import DumpExporter from "./classes/DumpExporter.js";
+import path from "path";
+import {loadConfig} from "./utilities/ConfigUtillities.js";
 
-const DumpLoader = require('../src/classes/DumpLoader');
-const Obfuscator = require("./classes/Obfuscator");
-const DumpExporter = require("./classes/DumpExporter");
-const path = require('path');
-const {loadConfig} = require('./utilities/ConfigUtillities');
+import logger from "./config/LogConfig.js";
 
-const logger = require('./config/LogConfig');
-
-const obfuscationCfg = path.join(__dirname, 'config', 'obfuscationCfg.yaml');
+const obfuscationCfg = path.join('obfuscationCfg.yaml');
 const {database, inputDump, outputDump} = loadConfig('config.yaml');
 
 /**
@@ -20,20 +18,22 @@ async function main() {
   try {
     await new DumpLoader(database, inputDump).loadDump();
   } catch (e) {
-    logger.error('Failed to load initial dump', e);
+    logger.error(e, 'Failed to load initial dump');
     process.exit(1);
   }
 
   try {
     await new Obfuscator(database, obfuscationCfg).obfuscateData();
   } catch (e) {
+    logger.error(e, 'Failed to obfuscate the data');
     process.exit(1);
   }
 
   try {
     await new DumpExporter(database, outputDump).exportDump();
   } catch (e) {
-    logger.error('Failed to export the data dump', e);
+    logger.error(e, 'Failed to export the data dump');
+    process.exit(1);
   }
 
 }

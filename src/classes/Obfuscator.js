@@ -1,12 +1,12 @@
-"use strict";
+import {Sequelize} from 'sequelize';
+import {loadConfig} from '../utilities/ConfigUtillities.js';
+import ObfuscatorStrategyMap from './obfuscators/ObfuscatorStrategyMap.js';
+import logger from '../config/LogConfig.js';
 
-const {Sequelize, DataTypes} = require('sequelize');
-const obfuscateUtils = require('../utilities/ObfuscateUtilities');
-const {loadConfig} = require('../utilities/ConfigUtillities');
-
-const logger = require('../config/LogConfig');
-
-class Obfuscator {
+/**
+ * This class goes through all MySQL tables and obfuscates all the data in all the columns.
+ */
+export default class Obfuscator {
 
   constructor(dbConfig, configFile) {
     this.sequelize = new Sequelize(dbConfig);
@@ -29,14 +29,14 @@ class Obfuscator {
   }
 
   async obfuscateData() {
-    logger.debug("Pre obfuscateData()");
+    logger.info('Obfuscating data from all tables...');
     try {
       const tables = await this.sequelize.getQueryInterface().showAllTables();
       for (const tableName of tables) {
         await this.obfuscate(tableName);
       }
     } catch (error) {
-      logger.error(`An unexpected error occurred while obfuscating data`, error);
+      logger.error(error, `An unexpected error occurred while obfuscating data`);
       throw error;
     }
   }
@@ -70,7 +70,7 @@ class Obfuscator {
         logger.debug(`Processing Table ${tableName} for value ${record[columnName]}`);
         if (ruleToApply && this.shouldObfuscate(tableName, columnName, record, ignorePattern)) {
           logger.debug(`Applied rule ${obfuscationRule}, Pattern to ignore ${ignorePattern} for value ${record[columnName]}`);
-          record[columnName] = obfuscateUtils[obfuscationRule](record[columnName]);
+          record[columnName] = ObfuscatorStrategyMap[obfuscationRule].obfuscateString(record[columnName]);
           isUpdated = true;
         }
       }
@@ -95,7 +95,7 @@ class Obfuscator {
         }
 
       } catch (error) {
-        logger.error(`Error updating table ${tableName}: ${error.message}`, error);
+        logger.error(error, `Error updating table ${tableName}: ${error.message}`);
         throw error;
       } finally {
         await this.sequelize.query(ENABLE_FK_CHECKS, { raw: true });
@@ -127,6 +127,3 @@ class Obfuscator {
   }
 
 }
-
-
-module.exports = Obfuscator;

@@ -1,8 +1,6 @@
-"use strict";
+import pino from 'pino';
 
-const pino = require('pino');
-
-module.exports = pino({
+export default pino({
   transport: {
     target: 'pino-pretty',
     options: {
