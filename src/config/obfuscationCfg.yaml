@@ -28,3 +28,7 @@ tables:
       - name: "requestContext"
         obfuscationRule: "requestContextObfuscate"
         ignorePattern: null
+
+algorithm:
+  name: xor
+  key: "91"

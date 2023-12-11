@@ -112,12 +112,28 @@ npm install
      - This configuration file allows for fine-grained control over how different data types, columns and tables are handled.
      - Note that each rule must have its implementation in the file [ObfuscateUtilities.js](src%2Futilities%2FObfuscateUtilities.js), The function name must be matching the rule name.
 
+   #### 3. Algorithm
+
+     - `name`: The name of the algorithm that obfuscate the values.
+     - `key`: the secret key to use for obfuscation
+
+        Example:
+
+          ```yaml
+           algorithm:
+             name: xyz
+             key: mysecretkey
+
+     Support two obfuscation algorithms
+      - Default, Mask the value with `X` except for the first character. Can't de-obfuscate to original value.
+      - XOR, Apply a bitwise XOR operation with a key to each character. The same key must be used to de-obfuscate.
+
 
 3. **Running the Tool**:
    ```
    node src/index.js
    ```
-   The script will run and obfuscate the data as per the configurations and rules you have defined.
+   The script will run and runObfuscationAlgorithm the data as per the configurations and rules you have defined.
 
 
 ### Contributing
