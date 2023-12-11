@@ -1,17 +1,13 @@
-"use strict"
+import fs from 'fs';
+import yaml from 'js-yaml';
+import logger from '../config/LogConfig.js';
 
-const fs = require('fs');
-const yaml = require('js-yaml');
-const logger = require('../config/LogConfig');
-
-function loadConfig(configFile) {
+export function loadConfig(configFile) {
   try {
     const fileContents = fs.readFileSync(configFile, 'utf8');
     return yaml.load(fileContents);
   } catch (e) {
-    logger.error(`An unexpected error occurred while loading config file ${configFile}`, e);
+    logger.error(e, `An unexpected error occurred while loading config file ${configFile}`);
     throw e;
   }
 }
-
-module.exports = {loadConfig}
