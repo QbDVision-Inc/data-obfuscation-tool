@@ -1,8 +1,8 @@
 "use strict";
 
 const {Sequelize, DataTypes} = require('sequelize');
-const obfuscateUtils = require('../utilities/ObfuscateUtilities');
 const {loadConfig} = require('../utilities/ConfigUtillities');
+const ObfuscationStrategies = require('../utilities/ObfuscationStrategies');
 
 const logger = require('../config/LogConfig');
 
@@ -11,6 +11,7 @@ class Obfuscator {
   constructor(dbConfig, configFile) {
     this.sequelize = new Sequelize(dbConfig);
     this.rules = loadConfig(configFile);
+    this.strategies = new ObfuscationStrategies(this.rules?.algorithm);
   }
 
   getTypeCategory(columnType) {
@@ -67,10 +68,12 @@ class Obfuscator {
         const ruleToApply = columnRule || generalRule;
         const {obfuscationRule, ignorePattern} = ruleToApply || {};
 
-        logger.debug(`Processing Table ${tableName} for value ${record[columnName]}`);
+        const value = record[columnName];
+        logger.debug(`Processing Table ${tableName} for value ${value}`);
+
         if (ruleToApply && this.shouldObfuscate(tableName, columnName, record, ignorePattern)) {
-          logger.debug(`Applied rule ${obfuscationRule}, Pattern to ignore ${ignorePattern} for value ${record[columnName]}`);
-          record[columnName] = obfuscateUtils[obfuscationRule](record[columnName]);
+          logger.debug(`Applied rule ${obfuscationRule}, Pattern to ignore ${ignorePattern} for value ${value}`);
+          record[columnName] = this.strategies.execute(value, obfuscationRule);
           isUpdated = true;
         }
       }
