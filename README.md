@@ -133,7 +133,7 @@ npm install
    ```
    node src/index.js
    ```
-   The script will run and runObfuscationAlgorithm the data as per the configurations and rules you have defined.
+   The script will run and obfuscate the data as per the configurations and rules you have defined.
 
 
 ### Contributing
