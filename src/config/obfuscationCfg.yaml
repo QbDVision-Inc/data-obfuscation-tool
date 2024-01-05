@@ -18,6 +18,10 @@ columns:
 tables:
   - name: SequelizeMeta
     ignore: true
+  - name: TechTransferChangeCriteria
+    columns:
+      - name: "config"
+        ignore: true
   - name: Projects
     columns:
       - name: "name"

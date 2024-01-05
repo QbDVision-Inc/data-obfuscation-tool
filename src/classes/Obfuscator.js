@@ -1,6 +1,6 @@
 "use strict";
 
-const {Sequelize, DataTypes} = require('sequelize');
+const {Sequelize} = require('sequelize');
 const {loadConfig} = require('../utilities/ConfigUtillities');
 const ObfuscationStrategies = require('../utilities/ObfuscationStrategies');
 
@@ -66,12 +66,12 @@ class Obfuscator {
         const generalRule = this.rules.general.find(rule => rule.type === columnTypeCategory);
 
         const ruleToApply = columnRule || generalRule;
-        const {obfuscationRule, ignorePattern} = ruleToApply || {};
+        const {obfuscationRule, ignorePattern, ignore = false} = ruleToApply || {};
 
         const value = record[columnName];
         logger.debug(`Processing Table ${tableName} for value ${value}`);
 
-        if (ruleToApply && this.shouldObfuscate(tableName, columnName, record, ignorePattern)) {
+        if (ruleToApply && this.shouldObfuscate(tableName, columnName, record, ignore, ignorePattern)) {
           logger.debug(`Applied rule ${obfuscationRule}, Pattern to ignore ${ignorePattern} for value ${value}`);
           record[columnName] = this.strategies.execute(value, obfuscationRule);
           isUpdated = true;
@@ -87,7 +87,7 @@ class Obfuscator {
       logger.debug("Before saving obfuscated rows to the database.");
 
       try {
-        await this.sequelize.query(DISABLE_FK_CHECKS, { raw: true });
+        await this.sequelize.query(DISABLE_FK_CHECKS, {raw: true});
 
         for (let i = 0; i < records.length; i += CHUNK_SIZE) {
           const chunk = records.slice(i, i + CHUNK_SIZE);
@@ -101,13 +101,17 @@ class Obfuscator {
         logger.error(`Error updating table ${tableName}: ${error.message}`, error);
         throw error;
       } finally {
-        await this.sequelize.query(ENABLE_FK_CHECKS, { raw: true });
+        await this.sequelize.query(ENABLE_FK_CHECKS, {raw: true});
       }
     }
 
   }
 
-  shouldObfuscate(table, column, record, ignorePattern) {
+  shouldObfuscate(table, column, record, ignore, ignorePattern) {
+    if (ignore) {
+      return false;
+    }
+
     if (ignorePattern === null) {
       return true;
     }
