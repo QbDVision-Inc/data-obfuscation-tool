@@ -31,7 +31,19 @@ tables:
         ignore: true
       - name: "scope"
         ignore: true
+  - name: FQAVersions
+    columns:
+      - name: "category"
+        ignore: true
+      - name: "scope"
+        ignore: true
   - name: FPAs
+    columns:
+      - name: "category"
+        ignore: true
+      - name: "scope"
+        ignore: true
+  - name: FPAVersions
     columns:
       - name: "category"
         ignore: true
