@@ -14,6 +14,9 @@ columns:
     ignore: true
   - name: processParameterOrder
     ignore: true
+  - name: controlStrategy
+    ignore: true
+
 
 tables:
   - name: SequelizeMeta
@@ -21,6 +24,18 @@ tables:
   - name: TechTransferChangeCriteria
     columns:
       - name: "config"
+        ignore: true
+  - name: FQAs
+    columns:
+      - name: "category"
+        ignore: true
+      - name: "scope"
+        ignore: true
+  - name: FPAs
+    columns:
+      - name: "category"
+        ignore: true
+      - name: "scope"
         ignore: true
   - name: Projects
     columns:
