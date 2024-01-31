@@ -1,5 +1,5 @@
-import {Sequelize} from 'sequelize';
-import {loadConfig} from '../utilities/ConfigUtillities.js';
+import { Sequelize } from 'sequelize';
+import { loadConfig } from '../utilities/ConfigUtillities.js';
 import ObfuscatorStrategyMap from './obfuscators/ObfuscatorStrategyMap.js';
 import logger from '../config/LogConfig.js';
 
@@ -45,6 +45,11 @@ export default class Obfuscator {
 
     logger.info(`Obfuscating table ${tableName}`);
 
+    if (tableName === "Projects") {
+      logger.level = "debug";
+    } else {
+      logger.level = "info";
+    }
     const tableRule = this.rules.tables.find(table => table.name === tableName);
 
     if (tableRule?.ignore) {
@@ -57,7 +62,6 @@ export default class Obfuscator {
     let isUpdated = false;
     const records = await this.sequelize.query(`SELECT * FROM ${tableName}`, {type: Sequelize.QueryTypes.SELECT});
     for (const record of records) {
-
       for (const [columnName, columnDetails] of Object.entries(columns)) {
 
         const columnRule = tableRule?.columns?.find(col => col.name === columnName);
@@ -65,11 +69,16 @@ export default class Obfuscator {
         const generalRule = this.rules.general.find(rule => rule.type === columnTypeCategory);
 
         const ruleToApply = columnRule || generalRule;
-        const {obfuscationRule, ignorePattern, ignore = false} = ruleToApply || {};
+        let {obfuscationRule, ignorePattern, ignore = false} = ruleToApply || {};
+        // Remove inner whitespace from ignore pattern
+        ignorePattern = ignorePattern?.replace(/\s/g, '');
 
-        logger.debug(`Processing Table ${tableName} for value ${record[columnName]}`);
-        if (ruleToApply && this.shouldObfuscate(tableName, columnName, record, ignorePattern)) {
+        logger.debug(`Processing Table ${tableName}[${columnName}] for value ${record[columnName]}`);
+        if (ruleToApply && this.shouldObfuscate(tableName, columnName, record, ignore, ignorePattern)) {
           logger.debug(`Applied rule ${obfuscationRule}, Pattern to ignore ${ignorePattern} for value ${record[columnName]}`);
+          if (ObfuscatorStrategyMap[obfuscationRule] === undefined) {
+            throw new Error(`Invalid obfuscation rule specified: ${obfuscationRule}`);
+          }
           record[columnName] = ObfuscatorStrategyMap[obfuscationRule].obfuscateString(record[columnName]);
           isUpdated = true;
         }
@@ -109,7 +118,7 @@ export default class Obfuscator {
       return false;
     }
 
-    if (ignorePattern === null) {
+    if (!ignorePattern) {
       return true;
     }
 
@@ -124,7 +133,7 @@ export default class Obfuscator {
     let isMatchingIgnorePattern = regex.test(value);
 
     if (isMatchingIgnorePattern) {
-      logger.debug(`${table} => column '${column}' with value ${record[column]} will be excluded from obfuscation`);
+      logger.debug(`Ignoring ${table}[${column}] with value ${record[column]} because it matched the ignore pattern "${ignorePattern}".`);
     }
 
     return !isMatchingIgnorePattern;

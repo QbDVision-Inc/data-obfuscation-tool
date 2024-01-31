@@ -6,8 +6,8 @@ import {loadConfig} from "./utilities/ConfigUtillities.js";
 
 import logger from "./config/LogConfig.js";
 
-const obfuscationCfg = path.join('obfuscationCfg.yaml');
-const {database, inputDump, outputDump} = loadConfig('config.yaml');
+const obfuscationCfg = path.join("obfuscationCfg.yaml");
+const {database, inputDump, outputDump} = loadConfig("config.yaml");
 
 /**
  * Main entry point.

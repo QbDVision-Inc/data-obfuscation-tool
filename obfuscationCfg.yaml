@@ -1,6 +1,6 @@
 general:
   - type: "string"
-    obfuscationRule: "stringObfuscator"
+    obfuscationRule: "dictionaryObfuscator"
     ignorePattern: (^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$)
       |(^\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b$)
       |(^\[?\s*\{.*?\}\s*(,\s*\{.*?\}\s*)*\]?$)
@@ -49,17 +49,20 @@ tables:
         ignore: true
       - name: "scope"
         ignore: true
+  - name: LibraryMaterials
+    columns:
+      - name: "category"
+        ignore: true
+  - name: LibraryMaterialVersions
+    columns:
+      - name: "category"
+        ignore: true
   - name: Projects
     columns:
       - name: "name"
-        obfuscationRule: "stringObfuscator"
-        ignorePattern: null
+        obfuscationRule: "dictionaryObfuscator"
   - name: "UserActivities"
     columns:
       - name: "requestContext"
         obfuscationRule: "noObfuscator"
         ignorePattern: null
-
-algorithm:
-  name: xor
-  key: "91"

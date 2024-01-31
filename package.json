@@ -16,6 +16,7 @@
     "mysql2": "3.6.5",
     "pino": "8.16.2",
     "pino-pretty": "10.2.3",
+    "popular-english-words": "1.0.2",
     "sequelize": "6.35.1"
   }
 }
