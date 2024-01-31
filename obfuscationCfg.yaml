@@ -14,10 +14,41 @@ columns:
     ignore: true
   - name: processParameterOrder
     ignore: true
+  - name: controlStrategy
+    ignore: true
+
 
 tables:
   - name: SequelizeMeta
     ignore: true
+  - name: TechTransferChangeCriteria
+    columns:
+      - name: "config"
+        ignore: true
+  - name: FQAs
+    columns:
+      - name: "category"
+        ignore: true
+      - name: "scope"
+        ignore: true
+  - name: FQAVersions
+    columns:
+      - name: "category"
+        ignore: true
+      - name: "scope"
+        ignore: true
+  - name: FPAs
+    columns:
+      - name: "category"
+        ignore: true
+      - name: "scope"
+        ignore: true
+  - name: FPAVersions
+    columns:
+      - name: "category"
+        ignore: true
+      - name: "scope"
+        ignore: true
   - name: Projects
     columns:
       - name: "name"
@@ -28,3 +59,7 @@ tables:
       - name: "requestContext"
         obfuscationRule: "noObfuscator"
         ignorePattern: null
+
+algorithm:
+  name: xor
+  key: "91"

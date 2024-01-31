@@ -65,7 +65,7 @@ export default class Obfuscator {
         const generalRule = this.rules.general.find(rule => rule.type === columnTypeCategory);
 
         const ruleToApply = columnRule || generalRule;
-        const {obfuscationRule, ignorePattern} = ruleToApply || {};
+        const {obfuscationRule, ignorePattern, ignore = false} = ruleToApply || {};
 
         logger.debug(`Processing Table ${tableName} for value ${record[columnName]}`);
         if (ruleToApply && this.shouldObfuscate(tableName, columnName, record, ignorePattern)) {
@@ -84,7 +84,7 @@ export default class Obfuscator {
       logger.debug("Before saving obfuscated rows to the database.");
 
       try {
-        await this.sequelize.query(DISABLE_FK_CHECKS, { raw: true });
+        await this.sequelize.query(DISABLE_FK_CHECKS, {raw: true});
 
         for (let i = 0; i < records.length; i += CHUNK_SIZE) {
           const chunk = records.slice(i, i + CHUNK_SIZE);
@@ -98,13 +98,17 @@ export default class Obfuscator {
         logger.error(error, `Error updating table ${tableName}: ${error.message}`);
         throw error;
       } finally {
-        await this.sequelize.query(ENABLE_FK_CHECKS, { raw: true });
+        await this.sequelize.query(ENABLE_FK_CHECKS, {raw: true});
       }
     }
 
   }
 
-  shouldObfuscate(table, column, record, ignorePattern) {
+  shouldObfuscate(table, column, record, ignore, ignorePattern) {
+    if (ignore) {
+      return false;
+    }
+
     if (ignorePattern === null) {
       return true;
     }
