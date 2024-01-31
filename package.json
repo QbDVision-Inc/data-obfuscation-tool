@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -10,10 +11,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "dictionary-en": "^4.0.0",
     "js-yaml": "4.1.0",
-    "mysql2": "3.6.3",
+    "mysql2": "3.6.5",
     "pino": "8.16.2",
     "pino-pretty": "10.2.3",
-    "sequelize": "6.32.1"
+    "sequelize": "6.35.1"
   }
 }

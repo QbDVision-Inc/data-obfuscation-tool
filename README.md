@@ -110,7 +110,7 @@ npm install
 
    
      - This configuration file allows for fine-grained control over how different data types, columns and tables are handled.
-     - Note that each rule must have its implementation in the file [ObfuscateUtilities.js](src%2Futilities%2FObfuscateUtilities.js), The function name must be matching the rule name.
+     - Note that each rule must have its implementation in the file [ObfuscationStrategies.js](src%2Futilities%2FObfuscationStrategies.js), The function name must be matching the rule name.
 
    #### 3. Algorithm
 

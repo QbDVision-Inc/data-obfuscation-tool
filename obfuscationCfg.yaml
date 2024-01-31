@@ -1,6 +1,6 @@
 general:
   - type: "string"
-    obfuscationRule: "stringObfuscate"
+    obfuscationRule: "stringObfuscator"
     ignorePattern: (^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$)
       |(^\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b$)
       |(^\[?\s*\{.*?\}\s*(,\s*\{.*?\}\s*)*\]?$)
@@ -52,12 +52,12 @@ tables:
   - name: Projects
     columns:
       - name: "name"
-        obfuscationRule: "nameObfuscate"
+        obfuscationRule: "stringObfuscator"
         ignorePattern: null
   - name: "UserActivities"
     columns:
       - name: "requestContext"
-        obfuscationRule: "requestContextObfuscate"
+        obfuscationRule: "noObfuscator"
         ignorePattern: null
 
 algorithm:

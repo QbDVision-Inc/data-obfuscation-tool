@@ -1,11 +1,10 @@
-"use strict";
+import {exec} from 'child_process';
+import util from 'util';
+import logger from '../config/LogConfig.js';
 
-const {exec} = require('child_process');
-const util = require('util');
-const logger = require('../config/LogConfig');
 const execAsync = util.promisify(exec);
 
-class DumpExporter {
+export default class DumpExporter {
 
   constructor(dbConfig, outputPath) {
     this.host = dbConfig.host;
@@ -20,16 +19,15 @@ class DumpExporter {
 
     try {
 
+      logger.info(`Exporting data to ${this.outputPath}...`);
       const command = `mysqldump -h ${this.host} -u ${this.user} --password=${this.password} --port=${this.port} ${this.database} > ${this.outputPath}`;
       await execAsync(command);
       logger.info(`Database dump exported successfully to ${this.outputPath}`);
 
     } catch (error) {
-      logger.error('An unexpected error occurred while exporting database dump', error);
+      logger.error(error, 'An unexpected error occurred while exporting database dump');
       throw error;
     }
   }
 
 }
-
-module.exports = DumpExporter;

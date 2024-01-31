@@ -1,16 +1,15 @@
-"use strict";
+import { exec } from 'child_process';
+import { Sequelize } from 'sequelize';
+import util from 'util';
+import logger from '../config/LogConfig.js';
+import { createReadStream, createWriteStream } from 'fs';
+import os from 'os';
+import path from 'path';
+import readline from 'readline';
 
-const {exec} = require('child_process');
-const {Sequelize} = require('sequelize');
-const util = require('util');
 const execAsync = util.promisify(exec);
-const logger = require('../config/LogConfig');
-const {createReadStream, createWriteStream} = require('fs');
-const os = require('os');
-const path = require('path');
-const readline = require('readline');
 
-class DumpLoader {
+export default class DumpLoader {
 
   constructor(dbConfig, dumpFilePath) {
     this.host = dbConfig.host;
@@ -72,7 +71,7 @@ class DumpLoader {
       writeStream.close();
 
     } catch (e) {
-      logger.error('An unexpected error occurred while removing the schema from the dump file', e);
+      logger.error(e, 'An unexpected error occurred while removing the schema from the dump file');
       throw e;
     }
 
@@ -99,7 +98,7 @@ class DumpLoader {
       logger.info(`Database loaded from the dump file < ${tempDumpFilePath}`);
 
     } catch (e) {
-      logger.error(`An unexpected error occurred while loading the dump file < ${tempDumpFilePath} `, e);
+      logger.error(e, `An unexpected error occurred while loading the dump file < ${tempDumpFilePath} `);
       throw e;
     } finally {
       await this.sequelize.close();
@@ -111,5 +110,3 @@ class DumpLoader {
     await execAsync(command);
   }
 }
-
-module.exports = DumpLoader;
