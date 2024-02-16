@@ -47,7 +47,11 @@ npm install
    Update this file with your database details, the name of the dump file, and the path for the obfuscated output.
 
 2. **Define Obfuscation Rules**:
-   
+
+   Copy `obfuscationCfg-template.yaml` to `obfuscationCfg.yaml` in the root directory.
+    ```shell
+    cp obfuscationCfg-template.yaml obfuscationCfg.yaml
+    ```
     The `obfuscationCfg.yaml` file is central to defining how data in your database should be obfuscated. This configuration file allows you to specify rules for general data types, specific columns, and even entire tables.
 
    #### Structure of `obfuscationCfg.yaml`

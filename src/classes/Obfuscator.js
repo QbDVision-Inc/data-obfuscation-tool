@@ -45,11 +45,6 @@ export default class Obfuscator {
 
     logger.info(`Obfuscating table ${tableName}`);
 
-    if (tableName === "Projects") {
-      logger.level = "debug";
-    } else {
-      logger.level = "info";
-    }
     const tableRule = this.rules.tables.find(table => table.name === tableName);
 
     if (tableRule?.ignore) {

@@ -1,3 +1,5 @@
+# Copy this file to config.yaml and update the values
+
 database:
   host: localhost
   username: root

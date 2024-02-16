@@ -1,0 +1,31 @@
+# Copy this file to obfuscationCfg.yaml and update the values
+
+general:
+  - type: "string"
+    # This is the default obfuscation rule for all string columns
+    obfuscationRule: "dictionaryObfuscator"
+    # Ignore UUIDs, emails and JSON strings
+    ignorePattern: (^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$)
+      |(^\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b$)
+      |(^\[?\s*\{.*?\}\s*(,\s*\{.*?\}\s*)*\]?$)
+
+columns:
+  # Use this to ignore a given column on every tables
+  - name: notImportantColumn
+    ignore: true
+
+# Use this to ignore whole tables or columns on a given table
+tables:
+  - name: SequelizeMeta
+    ignore: true
+  - name: SomeTable
+    columns:
+      - name: "notToBeObfuscatedColumn"
+        ignore: true
+      - name: "someOtherNotToBeObfuscatedColumn"
+        ignore: true
+  - name: Projects
+    columns:
+      - name: "name"
+        # You can also change the way a particular column is being obfuscated
+        obfuscationRule: "noObfuscation"

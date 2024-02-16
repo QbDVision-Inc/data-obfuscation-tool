@@ -1,9 +1,11 @@
 **/node_modules/
 **/.idea
-.DS_Store
 
 # So that nobody accidentally checks in their config.yaml with passwords, etc.
 config.yaml
+
+# So that nobody accidentally checks in actual table names
+obfuscationCfg.yaml
 
 # So that nobody accidentally checks in a private SQL file
 *.sql
