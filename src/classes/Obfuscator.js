@@ -52,6 +52,12 @@ export default class Obfuscator {
       return;
     }
 
+    if (tableRule?.truncate) {
+      logger.info(`Truncating table ${tableName}`);
+      await this.sequelize.getQueryInterface().bulkDelete(tableName);
+      return;
+    }
+
     const columns = await this.sequelize.getQueryInterface().describeTable(tableName);
 
     let isUpdated = false;
