@@ -29,3 +29,5 @@ tables:
       - name: "name"
         # You can also change the way a particular column is being obfuscated
         obfuscationRule: "noObfuscation"
+  - name: Orders
+    truncate: true # You can also just drop all rows from a table
