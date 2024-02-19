@@ -47,7 +47,11 @@ npm install
    Update this file with your database details, the name of the dump file, and the path for the obfuscated output.
 
 2. **Define Obfuscation Rules**:
-   
+
+   Copy `obfuscationCfg-template.yaml` to `obfuscationCfg.yaml` in the root directory.
+    ```shell
+    cp obfuscationCfg-template.yaml obfuscationCfg.yaml
+    ```
     The `obfuscationCfg.yaml` file is central to defining how data in your database should be obfuscated. This configuration file allows you to specify rules for general data types, specific columns, and even entire tables.
 
    #### Structure of `obfuscationCfg.yaml`
@@ -56,6 +60,15 @@ npm install
    #### 1. General Rules
    - `type`: Specifies the data type for which the rule applies (e.g., `string`).
    - `obfuscationRule`: The name of the obfuscation function to be used for this data type.
+       - Currently supported obfuscation rules are
+       - `stringObfuscator`: Mask the value with `X` except for the first character. Can't de-obfuscate to original value, but somebody who knows the original might be able to guess it.
+           - `Biopharma pilot` becomes `BXXXXXXXX p****`
+       - `xorObfuscator`: Apply a bitwise XOR operation with a random key to each character. The same key must be used to de-obfuscate.
+           - `Biopharma pilot` becomes `Id3ld4dasd aqwod` (relatively random text)
+       - `dictionaryObfuscator`: Replace the value with a random value from a dictionary. Can't de-obfuscate to original value.
+           - `Biopharma pilot` becomes `Whimsical across` (or some other random 9 character word)
+       - `noObfuscator`: Replace the value with itself.
+           - `Biopharma pilot` becomes `Biopharam pilot` (no change)
    - `ignorePattern`: A regular expression pattern to match values that should not be obfuscated.
 
        Example:
@@ -100,33 +113,17 @@ npm install
             - name: Projects
               columns:
                 - name: "name"
-                  obfuscationRule: "nameObfuscate"
+                  obfuscationRule: "stringObfuscator"
                   ignorePattern: null
             - name: UserActivities
               columns:
                 - name: "requestContext"
-                  obfuscationRule: "requestContextObfuscate"
+                  obfuscationRule: "requestContextObfuscator"
                   ignorePattern: null
 
    
      - This configuration file allows for fine-grained control over how different data types, columns and tables are handled.
-     - Note that each rule must have its implementation in the file [ObfuscationStrategies.js](src%2Futilities%2FObfuscationStrategies.js), The function name must be matching the rule name.
-
-   #### 3. Algorithm
-
-     - `name`: The name of the algorithm that obfuscate the values.
-     - `key`: the secret key to use for obfuscation
-
-        Example:
-
-          ```yaml
-           algorithm:
-             name: xyz
-             key: mysecretkey
-
-     Support two obfuscation algorithms
-      - Default, Mask the value with `X` except for the first character. Can't de-obfuscate to original value.
-      - XOR, Apply a bitwise XOR operation with a key to each character. The same key must be used to de-obfuscate.
+     - Note that each rule must have its implementation in the [ObfuscatorStrategyMap](src%2Fclasses%2Fobfuscators%2FObfuscatorStrategyMap.js), The function name must be matching the rule name.
 
 
 3. **Running the Tool**:
