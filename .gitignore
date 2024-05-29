@@ -38,3 +38,6 @@ downloadDB.bat
 # ----
 .DS_Store
 
+# Log files
+*.log
+
