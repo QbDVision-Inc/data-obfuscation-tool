@@ -6,6 +6,7 @@ import { createReadStream, createWriteStream } from 'fs';
 import os from 'os';
 import path from 'path';
 import readline from 'readline';
+import fs from 'fs';
 
 const execAsync = util.promisify(exec);
 
@@ -106,6 +107,9 @@ export default class DumpLoader {
   }
 
   async load(dumpFilePath) {
+    if (!fs.existsSync(dumpFilePath)) {
+      throw new Error(`Dump file not found: ${dumpFilePath}`);
+    }
     const command = `mysql -h ${this.host} -u ${this.user} -p${this.password} --port=${this.port} ${this.database} < ${dumpFilePath}`;
     await execAsync(command);
   }

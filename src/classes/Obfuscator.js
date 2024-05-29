@@ -65,11 +65,16 @@ export default class Obfuscator {
     for (const record of records) {
       for (const [columnName, columnDetails] of Object.entries(columns)) {
 
-        const columnRule = tableRule?.columns?.find(col => col.name === columnName);
+        const columnRule = this.rules?.columns?.find(col => col.name === columnName);
+        const tableColumnRule = tableRule?.columns?.find(col => col.name === columnName);
         const columnTypeCategory = this.getTypeCategory(columnDetails.type);
-        const generalRule = this.rules.general.find(rule => rule.type === columnTypeCategory);
+        const generalRule = this.rules.general?.find(rule => rule.type === columnTypeCategory);
 
-        const ruleToApply = columnRule || generalRule;
+        // Loads the rules in a way that the table-specific inherits from the column-specific and all inherit from the general one
+        const ruleToApply = (generalRule || columnRule || tableColumnRule) ? {
+          ...(generalRule || {}), ...(columnRule || {}), ...(tableColumnRule || {})
+        } : undefined
+
         let {obfuscationRule, ignorePattern, ignore = false} = ruleToApply || {};
         // Remove inner whitespace from ignore pattern
         ignorePattern = ignorePattern?.replace(/\s/g, '');
