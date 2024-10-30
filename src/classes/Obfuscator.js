@@ -43,7 +43,7 @@ export default class Obfuscator {
 
   async obfuscate(tableName) {
 
-    logger.info(`Obfuscating table ${tableName}`);
+    logger.info(`Obfuscating table ${tableName}...`);
 
     const tableRule = this.rules.tables.find(table => table.name === tableName);
 
@@ -91,7 +91,7 @@ export default class Obfuscator {
     const ENABLE_FK_CHECKS = 'SET FOREIGN_KEY_CHECKS = 1;';
 
     if (isUpdated) {
-      logger.debug("Before saving obfuscated rows to the database.");
+      logger.info("Before saving obfuscated rows to the database.");
 
       try {
         await this.sequelize.query(DISABLE_FK_CHECKS, {raw: true});
