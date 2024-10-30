@@ -137,6 +137,13 @@ npm install
    ```
    The script will run and obfuscate the data as per the configurations and rules you have defined.
 
+### MySQL Configuration
+
+If you are using MySQL, you may need to update your `my.cnf`/`my.ini` file to allow for larger packet sizes. This is necessary when importing large tables of data.
+```
+[mysqld]
+max_allowed_packet=512M
+```
 
 ### Contributing
 Contributions to data-obfuscation-tool are welcome. Please feel free to fork the repository and submit pull requests.

@@ -13,6 +13,7 @@ obfuscationCfg.yaml
 
 # A batch file that shouldn't be checked in.
 downloadDB.bat
+downloadDB.sh
 
 # Vim
 # ---
