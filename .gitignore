@@ -39,3 +39,6 @@ downloadDB.sh
 # ----
 .DS_Store
 
+# Log files
+*.log
+

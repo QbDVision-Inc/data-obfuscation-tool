@@ -56,6 +56,12 @@ npm install
 
    #### Structure of `obfuscationCfg.yaml`
    The configuration file is divided into three main sections: `general`, `columns` and `tables`.
+   Also, there is an inheritance order on the configuration sections:
+   - `tables` inherits `columns`
+   - `columns` inherits `general`
+   
+   This means you can set very broad settings in general, and then override them for specific columns and, if needed, override it for each table.
+
 
    #### 1. General Rules
    - `type`: Specifies the data type for which the rule applies (e.g., `string`).
@@ -124,7 +130,6 @@ npm install
    
      - This configuration file allows for fine-grained control over how different data types, columns and tables are handled.
      - Note that each rule must have its implementation in the [ObfuscatorStrategyMap](src%2Fclasses%2Fobfuscators%2FObfuscatorStrategyMap.js), The function name must be matching the rule name.
-
 
 3. **Running the Tool**:
    ```
