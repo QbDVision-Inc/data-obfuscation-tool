@@ -6,7 +6,6 @@ import { BaseObfuscatorStrategy } from "./BaseObfuscatorStrategy.js";
 export class HTMLObfuscatorStrategy extends BaseObfuscatorStrategy {
 
   obfuscateString(someString) {
-    console.log(someString);
     return someString;
   }
 }

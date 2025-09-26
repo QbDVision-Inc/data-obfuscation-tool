@@ -1,4 +1,4 @@
-import { HTMLObfuscatorStrategy } from "../src/classes/obfuscators/HTMLObfuscatorStrategy.js";
+import { HTMLObfuscatorStrategy } from "../../src/classes/obfuscators/HTMLObfuscatorStrategy.js";
 
 describe("HTMLObfuscatorStrategy", () => {
   test("returns the same string for now (placeholder behavior)", () => {
