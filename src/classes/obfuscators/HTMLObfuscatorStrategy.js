@@ -13,10 +13,6 @@ export class HTMLObfuscatorStrategy extends BaseObfuscatorStrategy {
   }
 
   obfuscateString(someString) {
-    if (!someString || typeof someString !== "string") {
-      return someString;
-    }
-
     try {
       const root = parse(someString);
 
@@ -53,15 +49,14 @@ export class HTMLObfuscatorStrategy extends BaseObfuscatorStrategy {
   }
 
   _obfuscateAttributes(node) {
-    const protectedAttributes = new Set([
+    const PROTECTED_ATTRIBUTES = new Set([
       'class',
       'kind',
+      'model',
       'style',
       'contenteditable',
       'referenceblockname',
       'referenceblock',
-      'process',
-      'unitoperation',
       'data-record-id',
       'data-record-model-name',
       'data-record-column-name',
@@ -72,18 +67,18 @@ export class HTMLObfuscatorStrategy extends BaseObfuscatorStrategy {
 
     // Get all attribute names from the node
     const attributeNames = Object.keys(node.attributes);
-    for (const attName of attributeNames) {
-      const currentValue = node.getAttribute(attrName);
-      if (!currentValue || typeof currentValue !== 'string' || !currentValue.trim()) {
+    for (const attributeName of attributeNames) {
+      const currentValue = node.getAttribute(attributeName);
+      if (!currentValue.trim()) {
         continue;
       }
 
-      if (protectedAttributes.has(attName)) {
+      if (PROTECTED_ATTRIBUTES.has(attributeName)) {
         continue;
       }
 
       const obfuscatedValue = this._dictionaryObfuscatorStrategy.obfuscateString(currentValue);
-      node.setAttribute(attrName, obfuscatedValue);
+      node.setAttribute(attributeName, obfuscatedValue);
     }
   }
 
