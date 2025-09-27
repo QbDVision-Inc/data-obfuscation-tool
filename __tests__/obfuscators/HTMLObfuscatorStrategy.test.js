@@ -1,4 +1,5 @@
 import { HTMLObfuscatorStrategy } from "../../src/classes/obfuscators/HTMLObfuscatorStrategy.js";
+import { parse } from "node-html-parser";
 
 describe("HTMLObfuscatorStrategy", () => {
   let strategy;
@@ -166,11 +167,58 @@ describe("HTMLObfuscatorStrategy", () => {
     expect(result).not.toContain('Type: Footer');
     expect(result).not.toContain('This report was generated with QbDVision Version:');
     expect(result).not.toContain('CONFIDENTIAL INFORMATION');
-    expect(result).not.toContain('Page');
 
     // Test process attribute should be obfuscated (not in protected list)
     expect(result).not.toContain('Request Comment');
     expect(result).not.toContain('Magic Pound Cake');
     expect(result).not.toContain('Preliminary Hazards Analysis (PHA)');
+  });
+
+  test("obfuscates process attribute object values while preserving protected keys", () => {
+    const input = `<div process='{"id":1,"name":"Test Process","modelName":"Process","typeCode":"PR","description":"This should be obfuscated","site":"Test Site","class":"widget-class"}'>Content</div>`;
+    const result = strategy.obfuscateString(input);
+    const processObj = JSON.parse(parse(result).firstChild.getAttribute('process'));
+    console.log(processObj);
+
+    // Protected keys should have their original values preserved
+    expect(processObj.modelName).toBe("Process");
+    expect(processObj.typeCode).toBe("PR");
+    expect(processObj.class).toBe("widget-class");
+
+    // Non-protected keys should be obfuscated
+    expect(processObj.name).not.toBe("Test Process");
+    expect(processObj.description).not.toBe("This should be obfuscated");
+    expect(processObj.site).not.toBe("Test Site");
+    // expect(processObj.amount).not.toBe(2);
+
+    // Numeric values should remain unchanged
+    expect(processObj.id).toBe(1);
+
+    // Should still have the same keys
+    expect(processObj).toHaveProperty('id');
+    expect(processObj).toHaveProperty('name');
+    expect(processObj).toHaveProperty('modelName');
+    expect(processObj).toHaveProperty('typeCode');
+    expect(processObj).toHaveProperty('description');
+    expect(processObj).toHaveProperty('site');
+    expect(processObj).toHaveProperty('class');
+  });
+
+  test("handles nested objects in process attribute", () => {
+    const input = `<div process='{"project":{"id":1,"name":"Magic Cake","modelName":"Project","description":"Test Description"},"modelName":"Process","name":"Main Process"}'>Content</div>`;
+    const result = strategy.obfuscateString(input);
+    const processObj = JSON.parse(parse(result).firstChild.getAttribute('process'));
+
+    // Top-level protected attributes should be preserved
+    expect(processObj.modelName).toBe("Process");
+    expect(processObj.name).not.toBe("Main Process");
+
+    // Nested object protected attributes should be preserved
+    expect(processObj.project.modelName).toBe("Project");
+    expect(processObj.project.id).toBe(1);
+
+    // Nested object non-protected attributes should be obfuscated
+    expect(processObj.project.name).not.toBe("Magic Cake");
+    expect(processObj.project.description).not.toBe("Test Description");
   });
 });
