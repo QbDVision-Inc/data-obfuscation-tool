@@ -60,6 +60,7 @@ describe("HTMLObfuscatorStrategy", () => {
       expect(result).toContain(attr);
     });
     expect(result).not.toContain('should be obfuscated');
+    expect(result).not.toContain('Content');
   });
 
   test("handles complex HTML with nested qbd-output elements", () => {
