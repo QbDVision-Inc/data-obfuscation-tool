@@ -178,7 +178,6 @@ describe("HTMLObfuscatorStrategy", () => {
     const input = `<div process='{"id":1,"amount":2,"name":"Test Process","modelName":"Process","typeCode":"PR","description":"This should be obfuscated","site":"Test Site","class":"widget-class"}'>Content</div>`;
     const result = strategy.obfuscateString(input);
     const processObj = JSON.parse(parse(result).firstChild.getAttribute('process'));
-    console.log(processObj);
 
     // Protected keys should have their original values preserved
     expect(processObj.modelName).toBe("Process");
