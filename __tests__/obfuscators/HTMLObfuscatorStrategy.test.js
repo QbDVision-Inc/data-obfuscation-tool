@@ -175,7 +175,7 @@ describe("HTMLObfuscatorStrategy", () => {
   });
 
   test("obfuscates process attribute object values while preserving protected keys", () => {
-    const input = `<div process='{"id":1,"name":"Test Process","modelName":"Process","typeCode":"PR","description":"This should be obfuscated","site":"Test Site","class":"widget-class"}'>Content</div>`;
+    const input = `<div process='{"id":1,"amount":2,"name":"Test Process","modelName":"Process","typeCode":"PR","description":"This should be obfuscated","site":"Test Site","class":"widget-class"}'>Content</div>`;
     const result = strategy.obfuscateString(input);
     const processObj = JSON.parse(parse(result).firstChild.getAttribute('process'));
     console.log(processObj);
@@ -189,10 +189,10 @@ describe("HTMLObfuscatorStrategy", () => {
     expect(processObj.name).not.toBe("Test Process");
     expect(processObj.description).not.toBe("This should be obfuscated");
     expect(processObj.site).not.toBe("Test Site");
-    // expect(processObj.amount).not.toBe(2);
 
     // Numeric values should remain unchanged
     expect(processObj.id).toBe(1);
+    expect(processObj.amount).toBe(2);
 
     // Should still have the same keys
     expect(processObj).toHaveProperty('id');
@@ -205,7 +205,7 @@ describe("HTMLObfuscatorStrategy", () => {
   });
 
   test("handles nested objects in process attribute", () => {
-    const input = `<div process='{"project":{"id":1,"name":"Magic Cake","modelName":"Project","description":"Test Description"},"modelName":"Process","name":"Main Process"}'>Content</div>`;
+    const input = `<div process='{"project":{"id":1,"amount":3,"name":"Magic Cake","modelName":"Project","description":"Test Description"},"modelName":"Process","name":"Main Process"}'>Content</div>`;
     const result = strategy.obfuscateString(input);
     const processObj = JSON.parse(parse(result).firstChild.getAttribute('process'));
 
@@ -216,6 +216,7 @@ describe("HTMLObfuscatorStrategy", () => {
     // Nested object protected attributes should be preserved
     expect(processObj.project.modelName).toBe("Project");
     expect(processObj.project.id).toBe(1);
+    expect(processObj.project.amount).toBe(3);
 
     // Nested object non-protected attributes should be obfuscated
     expect(processObj.project.name).not.toBe("Magic Cake");
