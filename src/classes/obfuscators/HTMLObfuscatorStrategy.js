@@ -17,7 +17,6 @@ export class HTMLObfuscatorStrategy extends BaseObfuscatorStrategy {
       const root = parse(someString);
 
       this._processTextNodes(root);
-      console.log(root.toString());
 
       return root.toString();
     } catch (error) {
@@ -64,12 +63,21 @@ export class HTMLObfuscatorStrategy extends BaseObfuscatorStrategy {
       'data-record-sub-model-name',
       'data-record-sub-model-data'
     ]);
+    const ATTRIBUTE_WITH_OBJECT_VALUE = new Set([
+      "process",
+      "unitoperation"
+    ])
 
     // Get all attribute names from the node
     const attributeNames = Object.keys(node.attributes);
     for (const attributeName of attributeNames) {
       const currentValue = node.getAttribute(attributeName);
       if (!currentValue.trim()) {
+        continue;
+      }
+
+      if (ATTRIBUTE_WITH_OBJECT_VALUE.has(attributeName)) {
+        node.setAttribute(attributeName, this._obfuscateObjectAttributeValue(currentValue));
         continue;
       }
 
@@ -82,6 +90,22 @@ export class HTMLObfuscatorStrategy extends BaseObfuscatorStrategy {
     }
   }
 
+  _obfuscateObjectAttributeValue(attributeValue) {
+    try {
+      const obj = JSON.parse(attributeValue);
+      for (const key in obj) {
+        if (typeof obj[key] === 'string' && obj[key].trim()) {
+          obj[key] = this._dictionaryObfuscatorStrategy.obfuscateString(obj[key]);
+        } else if (typeof obj[key] === 'object' && obj[key] !== null) {
+          obj[key] = JSON.parse(this._obfuscateObjectAttributeValue(JSON.stringify(obj[key])));
+        }
+      }
+      return JSON.stringify(obj);
+    } catch {
+      return this._dictionaryObfuscatorStrategy.obfuscateString(attributeValue);
+    }
+  }
+
   _isInsideQbdOutput(node) {
     let current = node.parentNode;
 
@@ -89,7 +113,7 @@ export class HTMLObfuscatorStrategy extends BaseObfuscatorStrategy {
       if (current.nodeType === 1) {
         const classAttr = current.getAttribute("class");
         if (classAttr && classAttr.includes("qbd-output")) {
-          return true;
+          return !classAttr.includes("qbd-output-direct-scope-widget");
         }
       }
       current = current.parentNode;
