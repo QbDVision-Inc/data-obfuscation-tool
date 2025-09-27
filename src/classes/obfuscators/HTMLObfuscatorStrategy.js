@@ -50,6 +50,7 @@ export class HTMLObfuscatorStrategy extends BaseObfuscatorStrategy {
   }
 
   _obfuscateAttributes(node) {
+    // Those attributes are from widget_node and qbd_field_node in the main repo https://github.com/QbDVision-Inc/qbdvision
     const PROTECTED_ATTRIBUTES = new Set([
       'class',
       'kind',
@@ -63,7 +64,9 @@ export class HTMLObfuscatorStrategy extends BaseObfuscatorStrategy {
       'data-record-column-name',
       'data-never-approved',
       'data-record-sub-model-name',
-      'data-record-sub-model-data'
+      'data-record-sub-model-data',
+      'modelName',
+      'typeCode'
     ]);
     const ATTRIBUTE_WITH_OBJECT_VALUE = new Set([
       "process",
@@ -74,7 +77,7 @@ export class HTMLObfuscatorStrategy extends BaseObfuscatorStrategy {
     const attributeNames = Object.keys(node.attributes);
     for (const attributeName of attributeNames) {
       const currentValue = node.getAttribute(attributeName);
-      if (!currentValue.trim()) {
+      if (!currentValue || typeof currentValue !== "string" || !currentValue.trim()) {
         continue;
       }
 
@@ -93,11 +96,33 @@ export class HTMLObfuscatorStrategy extends BaseObfuscatorStrategy {
   }
 
   _obfuscateObjectAttributeValue(attributeValue) {
+    // Those attributes are from widget_node and qbd_field_node in the main repo https://github.com/QbDVision-Inc/qbdvision
+    const PROTECTED_ATTRIBUTES = new Set([
+      'class',
+      'kind',
+      'model',
+      'style',
+      'contenteditable',
+      'referenceblockname',
+      'referenceblock',
+      'data-record-id',
+      'data-record-model-name',
+      'data-record-column-name',
+      'data-never-approved',
+      'data-record-sub-model-name',
+      'data-record-sub-model-data',
+      'modelName',
+      'typeCode'
+    ]);
+
     try {
       const obj = JSON.parse(attributeValue);
       for (const key in obj) {
         if (typeof obj[key] === 'string' && obj[key].trim()) {
-          obj[key] = this._dictionaryObfuscatorStrategy.obfuscateString(obj[key]);
+          // Only obfuscate if the key is not a protected attribute
+          if (!PROTECTED_ATTRIBUTES.has(key)) {
+            obj[key] = this._dictionaryObfuscatorStrategy.obfuscateString(obj[key]);
+          }
         } else if (typeof obj[key] === 'object' && obj[key] !== null) {
           obj[key] = JSON.parse(this._obfuscateObjectAttributeValue(JSON.stringify(obj[key])));
         }
