@@ -77,7 +77,7 @@ export class HTMLObfuscatorStrategy extends BaseObfuscatorStrategy {
     const attributeNames = Object.keys(node.attributes);
     for (const attributeName of attributeNames) {
       const currentValue = node.getAttribute(attributeName);
-      if (!currentValue) {
+      if (!currentValue || typeof currentValue !== 'string' || !currentValue.trim()) {
         continue;
       }
 
@@ -120,7 +120,7 @@ export class HTMLObfuscatorStrategy extends BaseObfuscatorStrategy {
       for (const key in obj) {
         if (typeof obj[key] === 'object' && obj[key] !== null) {
           obj[key] = JSON.parse(this._obfuscateObjectAttributeValue(JSON.stringify(obj[key])));
-        } else if (obj[key] && key !== "id" && !key.endsWith("Id") && !PROTECTED_ATTRIBUTES.has(key)) {
+        } else if (obj[key] && typeof obj[key] === "string" && !PROTECTED_ATTRIBUTES.has(key)) {
           obj[key] = this._dictionaryObfuscatorStrategy.obfuscateString(obj[key]);
         }
       }
