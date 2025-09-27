@@ -1,5 +1,4 @@
 import { BaseObfuscatorStrategy } from "./BaseObfuscatorStrategy.js";
-import { WordObfuscatorStrategy } from "./WordObfuscatorStrategy.js";
 import { parse } from "node-html-parser";
 import { DictionaryObfuscatorStrategy } from "./DictionaryObfuscatorStrategy.js";
 
@@ -19,34 +18,27 @@ export class HTMLObfuscatorStrategy extends BaseObfuscatorStrategy {
     }
 
     try {
-      // Parse the HTML string
       const root = parse(someString);
 
-      // Process all text nodes starting from the root
       this.processTextNodes(root);
       console.log(root.toString());
 
-      // Return the modified HTML
       return root.toString();
     } catch (error) {
-      // If parsing fails, fall back to treating as plain text
       return this.stringObfuscator.obfuscateString(someString);
     }
   }
 
   processTextNodes(node) {
-    // If this is a text node, obfuscate it unless it's inside a qbd-output element
+    // nodeType 3 is a text node. We want to obfuscate text nodes only.
     if (node.nodeType === 3) {
-      // Text node
       const text = node.text;
       if (text && text.trim()) {
-        // Check if this text node is inside an element with class "qbd-output"
         if (!this.isInsideQbdOutput(node)) {
           node.textContent = this.stringObfuscator.obfuscateString(text);
         }
       }
     } else if (node.childNodes && node.childNodes.length > 0) {
-      // Recursively process child nodes
       node.childNodes.forEach((childNode) => {
         this.processTextNodes(childNode);
       });
@@ -58,7 +50,6 @@ export class HTMLObfuscatorStrategy extends BaseObfuscatorStrategy {
 
     while (current) {
       if (current.nodeType === 1) {
-        // Element node
         const classAttr = current.getAttribute("class");
         if (classAttr && classAttr.includes("qbd-output")) {
           return true;
