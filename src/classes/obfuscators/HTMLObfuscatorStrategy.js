@@ -13,11 +13,13 @@ export class HTMLObfuscatorStrategy extends BaseObfuscatorStrategy {
   }
 
   obfuscateString(someString) {
+    if (!someString) {
+      return someString;
+    }
+
     try {
       const root = parse(someString);
-
       this._processTextNodes(root);
-
       return root.toString();
     } catch (error) {
       return this._dictionaryObfuscatorStrategy.obfuscateString(someString);
