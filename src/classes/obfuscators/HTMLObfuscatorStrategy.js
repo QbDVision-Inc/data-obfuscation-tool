@@ -2,9 +2,28 @@ import { BaseObfuscatorStrategy } from "./BaseObfuscatorStrategy.js";
 import { parse } from "node-html-parser";
 import { DictionaryObfuscatorStrategy } from "./DictionaryObfuscatorStrategy.js";
 
+// Those attributes are from widget_node and qbd_field_node in the main repo https://github.com/QbDVision-Inc/qbdvision
+const PROTECTED_ATTRIBUTES = new Set([
+  'class',
+  'kind',
+  'model',
+  'style',
+  'contenteditable',
+  'referenceblockname',
+  'referenceblock',
+  'data-record-id',
+  'data-record-model-name',
+  'data-record-column-name',
+  'data-never-approved',
+  'data-record-sub-model-name',
+  'data-record-sub-model-data',
+  'modelName',
+  'typeCode'
+]);
+
 /**
  * This obfuscator preserves HTML tags and attributes, preserves text in elements with class "qbd-output",
- * and obfuscates all other text using WordObfuscatorStrategy
+ * and obfuscates all other text using DictionaryObfuscatorStrategy
  */
 export class HTMLObfuscatorStrategy extends BaseObfuscatorStrategy {
   constructor() {
@@ -50,28 +69,10 @@ export class HTMLObfuscatorStrategy extends BaseObfuscatorStrategy {
   }
 
   _obfuscateAttributes(node) {
-    // Those attributes are from widget_node and qbd_field_node in the main repo https://github.com/QbDVision-Inc/qbdvision
-    const PROTECTED_ATTRIBUTES = new Set([
-      'class',
-      'kind',
-      'model',
-      'style',
-      'contenteditable',
-      'referenceblockname',
-      'referenceblock',
-      'data-record-id',
-      'data-record-model-name',
-      'data-record-column-name',
-      'data-never-approved',
-      'data-record-sub-model-name',
-      'data-record-sub-model-data',
-      'modelName',
-      'typeCode'
-    ]);
     const ATTRIBUTE_WITH_OBJECT_VALUE = new Set([
       "process",
       "unitoperation"
-    ])
+    ]);
 
     // Get all attribute names from the node
     const attributeNames = Object.keys(node.attributes);
@@ -96,25 +97,6 @@ export class HTMLObfuscatorStrategy extends BaseObfuscatorStrategy {
   }
 
   _obfuscateObjectAttributeValue(attributeValue) {
-    // Those attributes are from widget_node and qbd_field_node in the main repo https://github.com/QbDVision-Inc/qbdvision
-    const PROTECTED_ATTRIBUTES = new Set([
-      'class',
-      'kind',
-      'model',
-      'style',
-      'contenteditable',
-      'referenceblockname',
-      'referenceblock',
-      'data-record-id',
-      'data-record-model-name',
-      'data-record-column-name',
-      'data-never-approved',
-      'data-record-sub-model-name',
-      'data-record-sub-model-data',
-      'modelName',
-      'typeCode'
-    ]);
-
     try {
       const obj = JSON.parse(attributeValue);
       for (const key in obj) {
