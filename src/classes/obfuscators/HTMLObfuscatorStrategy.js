@@ -22,16 +22,23 @@ const PROTECTED_ATTRIBUTES = new Set([
   "data-record-sub-model-name",
 ]);
 
-// Keys inside JSON attribute values whose data the app compares with database columns that the
-// column rules leave alone (link data lives in JSON columns, and those stay original). Obfuscating
-// them would break that comparison, so the whole value is kept, including nested objects.
+// Keys inside JSON attribute values that must keep their original value.
 const PROTECTED_JSON_KEYS = new Set([
+  // Link data. The app compares it with database columns that the column rules leave alone,
+  // because link data lives in JSON columns and those stay original. Replacing it would break
+  // that comparison, so the whole value is kept, including nested objects.
   "link",
   "linktype",
   "filename",
   "s3tmpkey",
   "s3tmpversion",
   "linkversion",
+  // Widget filter settings. An operator such as "contains" and a field name such as "label" read
+  // like ordinary words, so the text check below cannot tell them apart from prose. The value the
+  // customer typed lives under targetValue, which is still replaced.
+  "attribute",
+  "operator",
+  "submodel",
 ]);
 
 // A value matching any of these is read by the app, not by a person, so obfuscating it breaks the

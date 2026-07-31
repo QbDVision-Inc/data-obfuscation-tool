@@ -20,8 +20,7 @@ describe("HTMLObfuscatorStrategy", () => {
   });
 
   test("preserves text in elements with qbd-output class", () => {
-    const input =
-      '<p>This should be obfuscated</p><span class="qbd-output">This should be preserved</span>';
+    const input = `<p>This should be obfuscated</p><span class="qbd-output">This should be preserved</span>`;
     const result = strategy.obfuscateString(input);
 
     expect(result).toContain("This should be preserved");
@@ -29,8 +28,7 @@ describe("HTMLObfuscatorStrategy", () => {
   });
 
   test("not preserves text in elements with qbd-output-direct-scope-widget class", () => {
-    const input =
-      '<p>This should be obfuscated</p><span class="qbd-output qbd-output-direct-scope-widget">This should not be preserved</span>';
+    const input = `<p>This should be obfuscated</p><span class="qbd-output qbd-output-direct-scope-widget">This should not be preserved</span>`;
     const result = strategy.obfuscateString(input);
 
     expect(result).not.toContain("This should not be preserved");
@@ -38,25 +36,24 @@ describe("HTMLObfuscatorStrategy", () => {
   });
 
   test("obfuscates attribute values except protected ones", () => {
-    const input =
-      '<div title="Custom Title" class="test-class" style="color: red;">Content</div>';
+    const input = `<div title="Custom Title" class="test-class" style="color: red;">Content</div>`;
     const result = strategy.obfuscateString(input);
 
     expect(result).toMatch(/<div.*<\/div>/);
-    expect(result).toContain('class="test-class"');
-    expect(result).toContain('style="color: red;"');
+    expect(result).toContain(`class="test-class"`);
+    expect(result).toContain(`style="color: red;"`);
     expect(result).not.toContain("Custom Title");
     expect(result).toMatch(/title="[^"]*"/);
   });
 
   test("preserves protected attributes", () => {
     const protectedAttrs = [
-      'class="widget"',
-      'kind="Repeater"',
-      'style="color: blue;"',
-      'contenteditable="false"',
-      'data-record-id="123"',
-      'data-record-model-name="Test"',
+      `class="widget"`,
+      `kind="Repeater"`,
+      `style="color: blue;"`,
+      `contenteditable="false"`,
+      `data-record-id="123"`,
+      `data-record-model-name="Test"`,
     ];
 
     const input = `<div ${protectedAttrs.join(" ")} custom="should be obfuscated">Content</div>`;
@@ -86,8 +83,8 @@ describe("HTMLObfuscatorStrategy", () => {
     expect(result).toContain("Also preserved");
     expect(result).not.toContain("Regular text to obfuscate");
     expect(result).not.toContain("More text to obfuscate");
-    expect(result).toContain('<div class="widget">');
-    expect(result).toContain('class="qbd-output"');
+    expect(result).toContain(`<div class="widget">`);
+    expect(result).toContain(`class="qbd-output"`);
   });
 
   test("handles empty or null input", () => {
@@ -106,8 +103,7 @@ describe("HTMLObfuscatorStrategy", () => {
   });
 
   test("handles complex real-world HTML document with multiple widget types", () => {
-    const input =
-      '<html><head></head><body><div class="widget" kind="Header"><div class="widget-main"><div class="widget-item"><div>Type: Header</div></div></div><div class="widget-content-container"><div class="widget-content"><table><tbody><tr><td><p><span contenteditable="false" class="qbd-output qbd-output-widget">DocBuilderFields.companyName</span></p></td><td><p style="text-align:left">Export Date: <span contenteditable="false" class="qbd-output qbd-output-widget">DocBuilderFields.informationDate</span></p></td></tr><tr><td><p>Project: <span contenteditable="false" class="qbd-output qbd-output-widget">Project.name</span></p></td><td><p style="text-align:left">Exported By: <span contenteditable="false" class="qbd-output qbd-output-widget">DocBuilderFields.currentUser</span></p></td></tr><tr><td><p><span contenteditable="false" class="qbd-output qbd-output-widget">Document.name</span></p></td><td><p style="text-align:left">Record Data Type: <span contenteditable="false" class="qbd-output qbd-output-widget">DocBuilderFields.dataScope</span></p></td></tr></tbody></table></div></div></div><p></p><div class="widget" kind="Repeater" model="UnitOperation" process="{&quot;id&quot;:1,&quot;name&quot;:&quot;Request Comment&quot;,&quot;description&quot;:&quot;Took&quot;,&quot;site&quot;:&quot;&quot;,&quot;gmp&quot;:false,&quot;scale&quot;:&quot;&quot;,&quot;referencesLinks&quot;:&quot;&quot;,&quot;techTransferEnabled&quot;:null,&quot;integrations&quot;:&quot;&quot;,&quot;currentState&quot;:&quot;Evidence&quot;,&quot;clonedFromVersionId&quot;:null,&quot;clonedFromModel&quot;:&quot;&quot;,&quot;createdByUserId&quot;:5974,&quot;createdAt&quot;:&quot;2025-09-22T05:28:24.000Z&quot;,&quot;updatedAt&quot;:&quot;2025-09-23T07:44:13.000Z&quot;,&quot;deletedAt&quot;:null,&quot;ProjectId&quot;:1,&quot;SupplierId&quot;:null,&quot;SendingId&quot;:null,&quot;LastVersionId&quot;:7,&quot;LastApprovedVersionId&quot;:null,&quot;LastVersionTransitionId&quot;:10,&quot;Supplier&quot;:null,&quot;modelName&quot;:&quot;Process&quot;,&quot;typeCode&quot;:&quot;PR&quot;,&quot;approved&quot;:false,&quot;project&quot;:{&quot;id&quot;:1,&quot;name&quot;:&quot;Magic Pound Cake&quot;,&quot;isDemo&quot;:false,&quot;RMPId&quot;:3,&quot;deletedAt&quot;:null,&quot;riskAssessmentMethod&quot;:null,&quot;productRiskAssessmentType&quot;:&quot;Preliminary Hazards Analysis (PHA)&quot;},&quot;parents&quot;:[],&quot;projectId&quot;:1,&quot;versionId&quot;:7,&quot;cacheDate&quot;:&quot;2025-09-26T16:13:09.000Z&quot;,&quot;cacheId&quot;:2892}"><div class="widget-main"><div class="widget-item"><div>Type: Repeater</div></div><div class="widget-item"><div>Model: Unit Operation</div></div></div><div class="widget-content-container"><div class="widget-content"><p>Unit operation name <span contenteditable="false" class="qbd-output qbd-output-widget">UnitOperation.name</span></p></div></div></div><p></p><p>This is a unit operation <span contenteditable="false" class="qbd-output qbd-output-direct-scope-widget  never-approved" data-record-path="[&quot;UO[name=\'April Institute\']&quot;,&quot;name&quot;]" data-record-id="1" data-record-model-name="UnitOperation" data-record-column-name="name" data-never-approved="true">April Institute</span></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p> </p><div class="widget" kind="Footer"><div class="widget-main"><div class="widget-item"><div>Type: Footer</div></div></div><div class="widget-content-container"><div class="widget-content"><p style="text-align:center">This report was generated with QbDVision Version: <span contenteditable="false" class="qbd-output qbd-output-widget">DocBuilderFields.softwareVersion</span></p><table><tbody><tr><td><p></p></td><td><p style="text-align:center">CONFIDENTIAL INFORMATION</p></td><td><p style="text-align:right">Page <span contenteditable="false" class="qbd-output qbd-output-widget">DocBuilderFields.pageNumber</span> of  <span contenteditable="false" class="qbd-output qbd-output-widget">DocBuilderFields.totalPages</span></p></td></tr></tbody></table></div></div></div></body></html>';
+    const input = `<html><head></head><body><div class="widget" kind="Header"><div class="widget-main"><div class="widget-item"><div>Type: Header</div></div></div><div class="widget-content-container"><div class="widget-content"><table><tbody><tr><td><p><span contenteditable="false" class="qbd-output qbd-output-widget">DocBuilderFields.companyName</span></p></td><td><p style="text-align:left">Export Date: <span contenteditable="false" class="qbd-output qbd-output-widget">DocBuilderFields.informationDate</span></p></td></tr><tr><td><p>Project: <span contenteditable="false" class="qbd-output qbd-output-widget">Project.name</span></p></td><td><p style="text-align:left">Exported By: <span contenteditable="false" class="qbd-output qbd-output-widget">DocBuilderFields.currentUser</span></p></td></tr><tr><td><p><span contenteditable="false" class="qbd-output qbd-output-widget">Document.name</span></p></td><td><p style="text-align:left">Record Data Type: <span contenteditable="false" class="qbd-output qbd-output-widget">DocBuilderFields.dataScope</span></p></td></tr></tbody></table></div></div></div><p></p><div class="widget" kind="Repeater" model="UnitOperation" process="{&quot;id&quot;:1,&quot;name&quot;:&quot;Request Comment&quot;,&quot;description&quot;:&quot;Took&quot;,&quot;site&quot;:&quot;&quot;,&quot;gmp&quot;:false,&quot;scale&quot;:&quot;&quot;,&quot;referencesLinks&quot;:&quot;&quot;,&quot;techTransferEnabled&quot;:null,&quot;integrations&quot;:&quot;&quot;,&quot;currentState&quot;:&quot;Evidence&quot;,&quot;clonedFromVersionId&quot;:null,&quot;clonedFromModel&quot;:&quot;&quot;,&quot;createdByUserId&quot;:5974,&quot;createdAt&quot;:&quot;2025-09-22T05:28:24.000Z&quot;,&quot;updatedAt&quot;:&quot;2025-09-23T07:44:13.000Z&quot;,&quot;deletedAt&quot;:null,&quot;ProjectId&quot;:1,&quot;SupplierId&quot;:null,&quot;SendingId&quot;:null,&quot;LastVersionId&quot;:7,&quot;LastApprovedVersionId&quot;:null,&quot;LastVersionTransitionId&quot;:10,&quot;Supplier&quot;:null,&quot;modelName&quot;:&quot;Process&quot;,&quot;typeCode&quot;:&quot;PR&quot;,&quot;approved&quot;:false,&quot;project&quot;:{&quot;id&quot;:1,&quot;name&quot;:&quot;Magic Pound Cake&quot;,&quot;isDemo&quot;:false,&quot;RMPId&quot;:3,&quot;deletedAt&quot;:null,&quot;riskAssessmentMethod&quot;:null,&quot;productRiskAssessmentType&quot;:&quot;Preliminary Hazards Analysis (PHA)&quot;},&quot;parents&quot;:[],&quot;projectId&quot;:1,&quot;versionId&quot;:7,&quot;cacheDate&quot;:&quot;2025-09-26T16:13:09.000Z&quot;,&quot;cacheId&quot;:2892}"><div class="widget-main"><div class="widget-item"><div>Type: Repeater</div></div><div class="widget-item"><div>Model: Unit Operation</div></div></div><div class="widget-content-container"><div class="widget-content"><p>Unit operation name <span contenteditable="false" class="qbd-output qbd-output-widget">UnitOperation.name</span></p></div></div></div><p></p><p>This is a unit operation <span contenteditable="false" class="qbd-output qbd-output-direct-scope-widget  never-approved" data-record-path="[&quot;UO[name='April Institute']&quot;,&quot;name&quot;]" data-record-id="1" data-record-model-name="UnitOperation" data-record-column-name="name" data-never-approved="true">April Institute</span></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p> </p><div class="widget" kind="Footer"><div class="widget-main"><div class="widget-item"><div>Type: Footer</div></div></div><div class="widget-content-container"><div class="widget-content"><p style="text-align:center">This report was generated with QbDVision Version: <span contenteditable="false" class="qbd-output qbd-output-widget">DocBuilderFields.softwareVersion</span></p><table><tbody><tr><td><p></p></td><td><p style="text-align:center">CONFIDENTIAL INFORMATION</p></td><td><p style="text-align:right">Page <span contenteditable="false" class="qbd-output qbd-output-widget">DocBuilderFields.pageNumber</span> of  <span contenteditable="false" class="qbd-output qbd-output-widget">DocBuilderFields.totalPages</span></p></td></tr></tbody></table></div></div></div></body></html>`;
     const result = strategy.obfuscateString(input);
 
     // Test HTML structure preservation
@@ -117,35 +113,35 @@ describe("HTMLObfuscatorStrategy", () => {
     expect(result).toContain("</body></html>");
 
     // Test protected class attributes are preserved
-    expect(result).toContain('class="widget"');
-    expect(result).toContain('class="widget-main"');
-    expect(result).toContain('class="widget-content"');
-    expect(result).toContain('class="qbd-output qbd-output-widget"');
+    expect(result).toContain(`class="widget"`);
+    expect(result).toContain(`class="widget-main"`);
+    expect(result).toContain(`class="widget-content"`);
+    expect(result).toContain(`class="qbd-output qbd-output-widget"`);
     expect(result).toContain(
-      'class="qbd-output qbd-output-direct-scope-widget  never-approved"',
+      `class="qbd-output qbd-output-direct-scope-widget  never-approved"`,
     );
 
     // Test protected kind attributes are preserved
-    expect(result).toContain('kind="Header"');
-    expect(result).toContain('kind="Repeater"');
-    expect(result).toContain('kind="Footer"');
+    expect(result).toContain(`kind="Header"`);
+    expect(result).toContain(`kind="Repeater"`);
+    expect(result).toContain(`kind="Footer"`);
 
     // Test protected model attribute is preserved
-    expect(result).toContain('model="UnitOperation"');
+    expect(result).toContain(`model="UnitOperation"`);
 
     // Test protected contenteditable attributes are preserved
-    expect(result).toContain('contenteditable="false"');
+    expect(result).toContain(`contenteditable="false"`);
 
     // Test protected data-* attributes are preserved
-    expect(result).toContain('data-record-id="1"');
-    expect(result).toContain('data-record-model-name="UnitOperation"');
-    expect(result).toContain('data-record-column-name="name"');
-    expect(result).toContain('data-never-approved="true"');
+    expect(result).toContain(`data-record-id="1"`);
+    expect(result).toContain(`data-record-model-name="UnitOperation"`);
+    expect(result).toContain(`data-record-column-name="name"`);
+    expect(result).toContain(`data-never-approved="true"`);
 
     // Test protected style attributes are preserved
-    expect(result).toContain('style="text-align:left"');
-    expect(result).toContain('style="text-align:center"');
-    expect(result).toContain('style="text-align:right"');
+    expect(result).toContain(`style="text-align:left"`);
+    expect(result).toContain(`style="text-align:center"`);
+    expect(result).toContain(`style="text-align:right"`);
 
     // Test qbd-output content is preserved
     expect(result).toContain("DocBuilderFields.companyName");
@@ -238,8 +234,8 @@ describe("HTMLObfuscatorStrategy", () => {
 
   test("keeps the filters attribute valid JSON and only obfuscates its text values", () => {
     const filters =
-      '[{"model":"ProcessParameter","isAndFilter":true,' +
-      '"field":"ProcessParameter.name","operator":"=","value":"pH"}]';
+      `[{"model":"ProcessParameter","isAndFilter":true,` +
+      `"field":"ProcessParameter.name","operator":"=","value":"pH"}]`;
     const input = `<div class="widget" kind="Repeater" filters='${filters}'>x</div>`;
 
     const result = strategy.obfuscateString(input);
@@ -255,10 +251,33 @@ describe("HTMLObfuscatorStrategy", () => {
     expect(parsed[0].value).not.toBe("pH");
   });
 
+  test("keeps filter settings the app reads and only replaces the typed value", () => {
+    const shared = new DictionaryObfuscatorStrategy();
+    const strategy = new HTMLObfuscatorStrategy(shared);
+    const filters =
+      `[{"model":"ProcessParameter","subModel":"AcceptanceCriteriaRange",` +
+      `"attribute":"name","operator":"contains","targetValue":"Fermentation"}]`;
+    const input = `<div class="widget" kind="Repeater" filters='${filters}'>x</div>`;
+
+    const parsed = JSON.parse(
+      parse(strategy.obfuscateString(input))
+        .querySelector("div")
+        .getAttribute("filters"),
+    )[0];
+
+    // Filter settings read like ordinary words, so they used to be replaced. The widget then
+    // failed with "Unknown operator" and never rendered.
+    expect(parsed.operator).toBe("contains");
+    expect(parsed.subModel).toBe("AcceptanceCriteriaRange");
+    expect(parsed.attribute).toBe("name");
+    // The value the customer typed is still replaced, and matches the column obfuscation.
+    expect(parsed.targetValue).toBe(shared.obfuscateString("Fermentation"));
+  });
+
   test("preserves attribute values the app reads instead of displays", () => {
     const input =
-      '<div selected="true" dynamiclist="false" level="1" width="120px" ' +
-      'uuid="1e5b3c4a-2f11-4c9d-8a77-9b2e0d4f6a13" title="Batch release report">x</div>';
+      `<div selected="true" dynamiclist="false" level="1" width="120px" ` +
+      `uuid="1e5b3c4a-2f11-4c9d-8a77-9b2e0d4f6a13" title="Batch release report">x</div>`;
 
     const node = parse(strategy.obfuscateString(input)).querySelector("div");
 
@@ -309,7 +328,7 @@ describe("HTMLObfuscatorStrategy", () => {
   });
 
   test("matches protected attribute names case insensitively", () => {
-    const input = '<div modelName="Project" typeCode="PRJ">x</div>';
+    const input = `<div modelName="Project" typeCode="PRJ">x</div>`;
 
     const node = parse(strategy.obfuscateString(input)).querySelector("div");
 
@@ -348,9 +367,9 @@ describe("data-record-sub-model-data", () => {
     const encoded = subModelData.replace(/&/g, "&amp;").replace(/"/g, "&quot;");
     const path = "[&quot;PP[name='Fermentation']&quot;,&quot;lowerLimit&quot;]";
     const input =
-      '<span class="qbd-output qbd-output-direct-scope-widget"' +
+      `<span class="qbd-output qbd-output-direct-scope-widget"` +
       ` data-record-path="${path}"` +
-      ' data-record-sub-model-name="AcceptanceCriteriaRange"' +
+      ` data-record-sub-model-name="AcceptanceCriteriaRange"` +
       ` data-record-sub-model-data="${encoded}">0.5</span>`;
 
     const result = strategy.obfuscateString(input);
@@ -379,8 +398,8 @@ describe("data-record-sub-model-data", () => {
     const shared = new DictionaryObfuscatorStrategy();
     const strategy = new HTMLObfuscatorStrategy(shared);
     const filters =
-      '[{"isAndFilter":true,"attribute":"ProcessParameter.name",' +
-      '"operator":"=","targetValue":"Fermentation Temperature"}]';
+      `[{"isAndFilter":true,"attribute":"ProcessParameter.name",` +
+      `"operator":"=","targetValue":"Fermentation Temperature"}]`;
     const input = `<div class="widget" filters='${filters}'>x</div>`;
 
     const value = parse(strategy.obfuscateString(input))
@@ -399,8 +418,7 @@ describe("data-record-sub-model-data", () => {
       ObfuscatorStrategyMap.dictionaryObfuscator.obfuscateString(
         "Quality Range",
       );
-    const html =
-      '<span data-record-sub-model-data="{&quot;group&quot;:&quot;Quality Range&quot;}">x</span>';
+    const html = `<span data-record-sub-model-data="{&quot;group&quot;:&quot;Quality Range&quot;}">x</span>`;
 
     const out = ObfuscatorStrategyMap.htmlObfuscator.obfuscateString(html);
     const parsed = JSON.parse(
