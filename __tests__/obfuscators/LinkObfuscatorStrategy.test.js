@@ -97,3 +97,21 @@ describe("LinkObfuscatorStrategy", () => {
     expect(fromHtml.fileName).toBe(fromColumn.fileName);
   });
 });
+
+describe("inline images", () => {
+  test("replaces a base64 image with a blank one instead of random words", () => {
+    const strategy = new HTMLObfuscatorStrategy();
+    const png =
+      "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAAoCAYAAABXadAK";
+    const input = `<img src="${png}" />`;
+
+    const src = parse(strategy.obfuscateString(input))
+      .querySelector("img")
+      .getAttribute("src");
+
+    // Word replacement used to produce something like "back:women/the;artist,Will", which is not
+    // a valid URL, so every document lost its images.
+    expect(src.startsWith("data:image/png;base64,")).toBe(true);
+    expect(src).not.toContain("iVBORw0KGgoAAAANSUhEUgAAALQ");
+  });
+});

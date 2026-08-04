@@ -44,6 +44,11 @@ const VALUE_IS_NOT_TEXT = [
   /^[^A-Za-z]+$/, // operators and punctuation only, such as "="
 ];
 
+// A one pixel transparent PNG, used to replace inline images. Anything a customer pasted into a
+// document is gone, and the tag still points at a real image so nothing looks broken.
+const BLANK_IMAGE =
+  "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=";
+
 // One step of a data-record-path, for example PP[name='Fermentation']. The type code is part of the
 // schema and the record name is customer data, so each half needs different handling.
 const RECORD_PATH_STEP = /^(\w+)\[name='(.*)'\]$/;
@@ -133,6 +138,14 @@ export class HTMLObfuscatorStrategy extends BaseObfuscatorStrategy {
           attributeName,
           this._obfuscateRecordPath(currentValue),
         );
+        continue;
+      }
+
+      // An inline image. Word replacement turns the base64 into something like "back:women/the",
+      // which is not a valid URL, so the browser reports an unknown scheme and every document
+      // loses its images. A blank image keeps the tag valid and shows nothing of the original.
+      if (/^data:/i.test(trimmedValue)) {
+        node.setAttribute(attributeName, BLANK_IMAGE);
         continue;
       }
 
