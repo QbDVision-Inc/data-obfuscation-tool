@@ -347,9 +347,10 @@ describe("data-record-sub-model-data", () => {
     const shared = new DictionaryObfuscatorStrategy();
     const strategy = new HTMLObfuscatorStrategy(shared);
     const link = {
-      uuid: "cf40e9ac",
+      uuid: "cf40e9ac-1d22-4a7f-9f4e-77b0c1a9e551",
       linkType: "Attachment",
       fileName: "Report v1.pdf",
+      S3TmpKey: "clientSchemaName/91b85d5c/Report v1.pdf",
     };
     const nestedLinks = JSON.stringify([
       { uuid: "bcef9bfa", linkType: "Link" },
@@ -389,9 +390,16 @@ describe("data-record-sub-model-data", () => {
     // Free text is replaced but keeps its line break, so the escapes stay valid JSON.
     expect(parsed.targetJustification).not.toContain("Not Less Than");
     expect(parsed.targetJustification).toContain("\n");
-    // Link data mirrors database JSON columns that the column rules skip, so it stays as is.
+    // A JSON string value still mirrors a database JSON column that the column rules skip.
     expect(parsed.acceptanceCriteriaLinks).toBe(nestedLinks);
-    expect(parsed.link).toEqual(link);
+    // Link data is customer data. The shape survives so the app can still read it, but the file
+    // name and the customer schema name are gone.
+    expect(parsed.link.uuid).toBe(link.uuid);
+    expect(parsed.link.linkType).toBe("Attachment");
+    expect(parsed.link.fileName).toBe("attachment.pdf");
+    expect(parsed.link.S3TmpKey).toBe("obfuscated/91b85d5c/attachment.pdf");
+    expect(JSON.stringify(parsed)).not.toContain("Report v1.pdf");
+    expect(JSON.stringify(parsed)).not.toContain("clientSchemaName");
   });
 
   test("filters targetValue matches the column obfuscation through the shared dictionary", () => {

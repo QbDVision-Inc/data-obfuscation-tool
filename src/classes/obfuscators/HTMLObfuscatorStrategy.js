@@ -1,6 +1,7 @@
 import { BaseObfuscatorStrategy } from "./BaseObfuscatorStrategy.js";
 import { parse } from "node-html-parser";
 import { DictionaryObfuscatorStrategy } from "./DictionaryObfuscatorStrategy.js";
+import { isLinkField, obfuscateLinkField } from "./LinkObfuscatorStrategy.js";
 
 // Those attributes are from widget_node and qbd_field_node in the main repo https://github.com/QbDVision-Inc/qbdvision
 // Every name here must be lowercase. HTML parsers lowercase attribute names, so a camelCase entry
@@ -22,23 +23,15 @@ const PROTECTED_ATTRIBUTES = new Set([
   "data-record-sub-model-name",
 ]);
 
-// Keys inside JSON attribute values that must keep their original value.
-const PROTECTED_JSON_KEYS = new Set([
-  // Link data. The app compares it with database columns that the column rules leave alone,
-  // because link data lives in JSON columns and those stay original. Replacing it would break
-  // that comparison, so the whole value is kept, including nested objects.
-  "link",
-  "linktype",
-  "filename",
-  "s3tmpkey",
-  "s3tmpversion",
-  "linkversion",
-  // Widget filter settings. An operator such as "contains" and a field name such as "label" read
-  // like ordinary words, so the text check below cannot tell them apart from prose. The value the
-  // customer typed lives under targetValue, which is still replaced.
+// Keys inside JSON attribute values that name something in the schema, not customer data. An
+// operator such as "contains" and a link type such as "Attachment" read like ordinary words, so
+// the text check below cannot tell them apart from prose. Replacing them breaks the app and hides
+// nothing. The value the customer typed lives under targetValue, which is still replaced.
+const SCHEMA_JSON_KEYS = new Set([
   "attribute",
   "operator",
   "submodel",
+  "linktype",
 ]);
 
 // A value matching any of these is read by the app, not by a person, so obfuscating it breaks the
@@ -206,9 +199,19 @@ export class HTMLObfuscatorStrategy extends BaseObfuscatorStrategy {
       for (const key in obj) {
         const value = obj[key];
         const keyName = String(key).toLowerCase();
+
+        // File names and storage paths are customer data, so they get a dummy of the same shape.
+        // The database columns holding the same links use the same helper, which keeps both copies
+        // equal for the image lookup by S3TmpKey. A "link" key can also hold a nested object, and
+        // that one falls through so its own fields get handled one by one.
+        if (isLinkField(keyName) && typeof value === "string") {
+          obj[key] = obfuscateLinkField(keyName, value);
+          continue;
+        }
+
         if (
           PROTECTED_ATTRIBUTES.has(keyName) ||
-          PROTECTED_JSON_KEYS.has(keyName)
+          SCHEMA_JSON_KEYS.has(keyName)
         ) {
           continue;
         }

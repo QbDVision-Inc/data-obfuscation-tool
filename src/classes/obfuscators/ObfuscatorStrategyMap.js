@@ -3,6 +3,7 @@ import { XORObfuscatorStrategy } from "./XORObfuscatorStrategy.js";
 import { NoObfuscatorStrategy } from "./NoObfuscatorStrategy.js";
 import { DictionaryObfuscatorStrategy } from "./DictionaryObfuscatorStrategy.js";
 import { HTMLObfuscatorStrategy } from "./HTMLObfuscatorStrategy.js";
+import { LinkObfuscatorStrategy } from "./LinkObfuscatorStrategy.js";
 
 /**
  * This is the central index of all obfuscator strategies.
@@ -17,6 +18,7 @@ const ObfuscatorStrategyMap = {
   dictionaryObfuscator: dictionaryObfuscatorStrategy,
   noObfuscator: new NoObfuscatorStrategy(),
   htmlObfuscator: new HTMLObfuscatorStrategy(dictionaryObfuscatorStrategy),
+  linkObfuscator: new LinkObfuscatorStrategy(),
 };
 
 export default ObfuscatorStrategyMap;
