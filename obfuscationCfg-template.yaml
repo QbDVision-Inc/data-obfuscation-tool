@@ -14,21 +14,8 @@ columns:
   - name: notImportantColumn
     ignore: true
 
-  # Link columns hold customer file names and storage paths. The general rule above ignores JSON
-  # strings, so each of these needs its own rule and an empty ignore pattern to reach it. The same
-  # replacement runs on the copies inside document HTML, so both stay equal.
-  - name: uploadImageLinks
-    obfuscationRule: "linkObfuscator"
-    ignorePattern: ""
-  - name: links
-    obfuscationRule: "linkObfuscator"
-    ignorePattern: ""
-  - name: referencesLinks
-    obfuscationRule: "linkObfuscator"
-    ignorePattern: ""
-  - name: acceptanceCriteriaLinks
-    obfuscationRule: "linkObfuscator"
-    ignorePattern: ""
+  # A column whose name ends in "links" goes through the link obfuscator on its own.
+  # Write a rule here only to override that.
 
 # Use this to ignore whole tables or columns on a given table
 tables:

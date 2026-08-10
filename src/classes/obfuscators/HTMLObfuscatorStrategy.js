@@ -1,7 +1,11 @@
 import { BaseObfuscatorStrategy } from "./BaseObfuscatorStrategy.js";
 import { parse } from "node-html-parser";
 import { DictionaryObfuscatorStrategy } from "./DictionaryObfuscatorStrategy.js";
-import { isLinkField, obfuscateLinkField } from "./LinkObfuscatorStrategy.js";
+import {
+  isLinkField,
+  isLinksField,
+  LinkObfuscatorStrategy,
+} from "./LinkObfuscatorStrategy.js";
 
 // Those attributes are from widget_node and qbd_field_node in the main repo https://github.com/QbDVision-Inc/qbdvision
 // Every name here must be lowercase. HTML parsers lowercase attribute names, so a camelCase entry
@@ -63,9 +67,13 @@ export class HTMLObfuscatorStrategy extends BaseObfuscatorStrategy {
   // app can still join them, for example an acceptance criteria group and label.
   constructor(
     dictionaryObfuscatorStrategy = new DictionaryObfuscatorStrategy(),
+    linkObfuscatorStrategy = new LinkObfuscatorStrategy(
+      dictionaryObfuscatorStrategy,
+    ),
   ) {
     super();
     this._dictionaryObfuscatorStrategy = dictionaryObfuscatorStrategy;
+    this._linkObfuscatorStrategy = linkObfuscatorStrategy;
   }
 
   obfuscateString(someString) {
@@ -213,12 +221,13 @@ export class HTMLObfuscatorStrategy extends BaseObfuscatorStrategy {
         const value = obj[key];
         const keyName = String(key).toLowerCase();
 
-        // File names and storage paths are customer data, so they get a dummy of the same shape.
-        // The database columns holding the same links use the same helper, which keeps both copies
-        // equal for the image lookup by S3TmpKey. A "link" key can also hold a nested object, and
-        // that one falls through so its own fields get handled one by one.
-        if (isLinkField(keyName) && typeof value === "string") {
-          obj[key] = obfuscateLinkField(keyName, value);
+        // The matching column runs through the same strategy, so the image lookup by S3TmpKey
+        // still finds its entry.
+        if (isLinkField(keyName) || isLinksField(keyName)) {
+          obj[key] = this._linkObfuscatorStrategy.obfuscateValue(
+            keyName,
+            value,
+          );
           continue;
         }
 

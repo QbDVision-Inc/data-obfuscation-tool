@@ -1,6 +1,7 @@
 import { Sequelize } from 'sequelize';
 import { loadConfig } from '../utilities/ConfigUtillities.js';
 import ObfuscatorStrategyMap from './obfuscators/ObfuscatorStrategyMap.js';
+import { isLinksField } from './obfuscators/LinkObfuscatorStrategy.js';
 import logger from '../config/LogConfig.js';
 
 /**
@@ -70,9 +71,11 @@ export default class Obfuscator {
         const columnTypeCategory = this.getTypeCategory(columnDetails.type);
         const generalRule = this.rules.general?.find(rule => rule.type === columnTypeCategory);
 
+        const linkRule = this.getLinkRule(columnName, columnTypeCategory, columnRule, tableColumnRule);
+
         // Loads the rules in a way that the table-specific inherits from the column-specific and all inherit from the general one
-        const ruleToApply = (generalRule || columnRule || tableColumnRule) ? {
-          ...(generalRule || {}), ...(columnRule || {}), ...(tableColumnRule || {})
+        const ruleToApply = (generalRule || linkRule || columnRule || tableColumnRule) ? {
+          ...(generalRule || {}), ...(linkRule || {}), ...(columnRule || {}), ...(tableColumnRule || {})
         } : undefined
 
         let {obfuscationRule, ignorePattern, ignore = false} = ruleToApply || {};
@@ -117,6 +120,20 @@ export default class Obfuscator {
       }
     }
 
+  }
+
+  /**
+   * Returns the link rule for a column such as riskLinks, so the config never has to name one.
+   * A rule written for the column wins over this one.
+   */
+  getLinkRule(columnName, columnTypeCategory, columnRule, tableColumnRule) {
+    if (columnTypeCategory !== 'string' || columnRule || tableColumnRule || !isLinksField(columnName)) {
+      return undefined;
+    }
+
+    // The general rule skips values shaped like JSON, and link columns are JSON, so this rule
+    // must not inherit that ignore pattern.
+    return {obfuscationRule: 'linkObfuscator', ignorePattern: ''};
   }
 
   shouldObfuscate(table, column, record, ignore, ignorePattern) {
