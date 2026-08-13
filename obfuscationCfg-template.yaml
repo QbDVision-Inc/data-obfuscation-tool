@@ -14,6 +14,9 @@ columns:
   - name: notImportantColumn
     ignore: true
 
+  # A column whose name ends in "links" goes through the link obfuscator on its own.
+  # Write a rule here only to override that.
+
 # Use this to ignore whole tables or columns on a given table
 tables:
   - name: SequelizeMeta
